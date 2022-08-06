@@ -11,13 +11,13 @@ if __name__ == "__main__":
     parser.add_argument('--lt_count', type=int, help='number of samples in the lt class')
     args = parser.parse_args()
 
-    pwd = os.os.path.dirname(args.fn)
+    pwd = os.path.dirname(args.fn)
 
     with open(args.fn) as f:
-        main = json.load(f)["labels"]
+        main_ = json.load(f)
 
-    if main:
-        main = np.array(main, dtype=object)
+    if main_["labels"]:
+        main = np.array(main_["labels"], dtype=object)
     else:
         exit(0)
 
@@ -32,10 +32,13 @@ if __name__ == "__main__":
     lt = {"lables": main[new_inds].tolist()}
     lt_sk = {"lables": main[ns_inds].tolist()}
 
-    with open(os.path.join(pwd, "dataset_lt.json"), "w") as f:
+    with open(os.path.join(pwd, "dataset.json"), "w") as f:
         json.dump(lt, f)
 
     with open(os.path.join(pwd, "dataset_lt_sk.json"), "w") as f:
         json.dump(lt_sk, f)
+
+    with open(os.path.join(pwd, "dataset_init.json"), "w") as f:
+        json.dump(main_, f)
 
 
