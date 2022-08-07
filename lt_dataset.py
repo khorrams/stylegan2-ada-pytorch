@@ -29,8 +29,8 @@ if __name__ == "__main__":
     # ns_lt_inds = np.array(list(set(lt_inds) - set(s_lt_inds)))
     new_inds = list(set(all_inds) - set(ns_inds))
 
-    lt = {"lables": main[new_inds].tolist()}
-    lt_sk = {"lables": main[ns_inds].tolist()}
+    lt = {"labels": main[new_inds].tolist()}
+    lt_sk = {"labels": main[ns_inds].tolist()}
 
     with open(os.path.join(pwd, "dataset.json"), "w") as f:
         json.dump(lt, f)
