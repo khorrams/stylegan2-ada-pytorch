@@ -29,12 +29,14 @@ class Dataset(torch.utils.data.Dataset):
         use_labels  = False,    # Enable conditioning labels? False = label dimension is zero.
         xflip       = False,    # Artificially double the size of the dataset via x-flips. Applied after max_size.
         random_seed = 0,        # Random seed to use when applying max_size.
+        fname = "dataset.json"
     ):
         self._name = name
         self._raw_shape = list(raw_shape)
         self._use_labels = use_labels
         self._raw_labels = None
         self._label_shape = None
+        self._fname = fname
 
         # Apply max_size.
         self._raw_idx = np.arange(self._raw_shape[0], dtype=np.int64)
@@ -162,9 +164,10 @@ class ImageFolderDataset(Dataset):
 
         if os.path.isdir(self._path):
             self._type = 'dir'
+            ## modified by me
             # self._all_fnames = {os.path.relpath(os.path.join(root, fname), start=self._path) for root, _dirs, files in os.walk(self._path) for fname in files}
-            ## added by me
-            fname = 'dataset.json'
+            # fname = 'dataset.json'
+            fname = self._fname
             with self._open_file(fname) as f:
                 labels = json.load(f)['labels']
             if labels is None:
@@ -173,7 +176,6 @@ class ImageFolderDataset(Dataset):
                 print("Reading image names from the dataset.json file")
                 self._all_fnames = {p[0] for p in labels}
             ##
-
         elif self._file_ext(self._path) == '.zip':
             self._type = 'zip'
             self._all_fnames = set(self._get_zipfile().namelist())
@@ -231,9 +233,12 @@ class ImageFolderDataset(Dataset):
         return image
 
     def _load_raw_labels(self):
-        fname = 'dataset.json'
+        # fname = 'dataset.json'
+        fname = self._fname
+        ## modified by me
         if not os.path.exists(os.path.join(self._path, fname)):
             return None
+        ##
         with self._open_file(fname) as f:
             labels = json.load(f)['labels']
         if labels is None:

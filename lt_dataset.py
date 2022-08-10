@@ -6,7 +6,7 @@ import os
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='LongTail Dataset')
-    parser.add_argument('--fn', metavar='PATH', type=str, help='path to the dataset json file')
+    parser.add_argument('--fn', metavar='PATH', type=str, help='path to the dataset json file', default="dataset.json")
     parser.add_argument('--lt_cls', type=int, help='index of the lt class')
     parser.add_argument('--lt_count', type=int, help='number of samples in the lt class')
     args = parser.parse_args()
@@ -32,13 +32,13 @@ if __name__ == "__main__":
     lt = {"labels": main[new_inds].tolist()}
     lt_sk = {"labels": main[ns_inds].tolist()}
 
-    with open(os.path.join(pwd, "dataset.json"), "w") as f:
+    with open(os.path.join(pwd, f"dataset-lt-{args.lt_cls}-{args.lt_count}.json"), "w") as f:
         json.dump(lt, f)
 
-    with open(os.path.join(pwd, "dataset_lt_sk.json"), "w") as f:
+    with open(os.path.join(pwd, f"dataset-lt-{args.lt_cls}_rem.json"), "w") as f:
         json.dump(lt_sk, f)
 
-    with open(os.path.join(pwd, "dataset_init.json"), "w") as f:
-        json.dump(main_, f)
+    # with open(os.path.join(pwd, "dataset_init.json"), "w") as f:
+    #     json.dump(main_, f)
 
 
