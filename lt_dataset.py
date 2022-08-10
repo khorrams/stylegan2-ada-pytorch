@@ -30,13 +30,13 @@ if __name__ == "__main__":
     new_inds = list(set(all_inds) - set(ns_inds))
 
     lt = {"labels": main[new_inds].tolist()}
-    lt_sk = {"labels": main[ns_inds].tolist()}
+    # lt_sk = {"labels": main[ns_inds].tolist()}
 
     with open(os.path.join(pwd, f"dataset-lt-{args.lt_cls}-{args.lt_count}.json"), "w") as f:
         json.dump(lt, f)
 
-    with open(os.path.join(pwd, f"dataset-lt-{args.lt_cls}_rem.json"), "w") as f:
-        json.dump(lt_sk, f)
+    # with open(os.path.join(pwd, f"dataset-lt-{args.lt_cls}-{}-rem.json"), "w") as f:
+    #     json.dump(lt_sk, f)
 
     # with open(os.path.join(pwd, "dataset_init.json"), "w") as f:
     #     json.dump(main_, f)
