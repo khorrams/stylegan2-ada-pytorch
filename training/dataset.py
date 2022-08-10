@@ -36,7 +36,6 @@ class Dataset(torch.utils.data.Dataset):
         self._use_labels = use_labels
         self._raw_labels = None
         self._label_shape = None
-        self._fname = fname
 
         # Apply max_size.
         self._raw_idx = np.arange(self._raw_shape[0], dtype=np.int64)
@@ -161,19 +160,18 @@ class ImageFolderDataset(Dataset):
     ):
         self._path = path
         self._zipfile = None
-
         if os.path.isdir(self._path):
             self._type = 'dir'
             ## modified by me
             # self._all_fnames = {os.path.relpath(os.path.join(root, fname), start=self._path) for root, _dirs, files in os.walk(self._path) for fname in files}
             # fname = 'dataset.json'
-            fname = self._fname
-            with self._open_file(fname) as f:
+            self.fname = super_kwargs["fname"]
+            with self._open_file(self.fname) as f:
                 labels = json.load(f)['labels']
             if labels is None:
                 self._all_fnames = {os.path.relpath(os.path.join(root, fname), start=self._path) for root, _dirs, files in os.walk(self._path) for fname in files}
             else:
-                print("Reading image names from the dataset.json file")
+                # print(f"Reading images names from the {self.fname} file")
                 self._all_fnames = {p[0] for p in labels}
             ##
         elif self._file_ext(self._path) == '.zip':
@@ -234,12 +232,11 @@ class ImageFolderDataset(Dataset):
 
     def _load_raw_labels(self):
         # fname = 'dataset.json'
-        fname = self._fname
         ## modified by me
-        if not os.path.exists(os.path.join(self._path, fname)):
+        if not os.path.exists(os.path.join(self._path, self.fname)):
             return None
         ##
-        with self._open_file(fname) as f:
+        with self._open_file(self.fname) as f:
             labels = json.load(f)['labels']
         if labels is None:
             return None
