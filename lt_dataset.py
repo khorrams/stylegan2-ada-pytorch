@@ -33,6 +33,8 @@ if __name__ == "__main__":
     lt_s = {"labels": main[s_inds].tolist()}
     # lt_sk = {"labels": main[ns_inds].tolist()}
 
+
+
     with open(os.path.join(pwd, f"dataset-lt-{args.lt_cls}-{args.lt_count}.json"), "w") as f:
         json.dump(lt, f)
 
@@ -40,10 +42,15 @@ if __name__ == "__main__":
         json.dump(lt_s, f)
 
 
+    pair_list = [[v[0], v[1] if v[1] == args.lt_cls else -1] for v in main[new_inds].tolist()]
+    lt_pair = {"lables": pair_list}
+    with open(os.path.join(pwd, f"pair-lt-{args.lt_cls}-{args.lt_count}.json"), "w") as f:
+        json.dump(lt_pair, f)
+
+
     # with open(os.path.join(pwd, f"dataset-lt-{args.lt_cls}-{}-rem.json"), "w") as f:
     #     json.dump(lt_sk, f)
 
     # with open(os.path.join(pwd, "dataset_init.json"), "w") as f:
     #     json.dump(main_, f)
-
 
