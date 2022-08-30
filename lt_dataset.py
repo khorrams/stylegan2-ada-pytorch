@@ -53,7 +53,10 @@ def dataset_lt(args):
     lt_ds = gen_imbalanced_data(main, img_num_per_cls, classes)
     lt = {"labels": lt_ds.tolist()}
 
-    with open(os.path.join(pwd, f"lt.json"), "w") as f:
+    filename = f"lt_{args.imf}"
+    if args.reverse:
+        filename += "_reverse"
+    with open(os.path.join(pwd, f"{filename}.json"), "w") as f:
         json.dump(lt, f)
 
 
