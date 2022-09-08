@@ -2,6 +2,7 @@ import json
 import argparse
 import numpy as np
 import os
+from operator import itemgetter
 
 
 def base_target_lt(args):
@@ -93,6 +94,45 @@ def gen_imbalanced_data(ds, img_num_per_cls, classes):
     return np.vstack(new_data)
 
 
+def gen_imbalanced_data_multi(ds, img_num_per_cls, classes):
+    new_data = []
+    for i, count in zip(classes, img_num_per_cls):
+        idx = np.where(ds[:, 1] == i)[0]
+        np.random.shuffle(idx)
+        selec_idx = idx[:count]
+        new_data.append(ds[selec_idx, ...])
+    return np.vstack(new_data)
+
+
+def dataset_lt_multi(args):
+    pwd = os.path.dirname(args.fn)
+    with open(args.fn) as f:
+        main_ = json.load(f)
+
+    if main_["labels"]:
+        main = np.array(main_["labels"], dtype=object)
+    else:
+        exit(0)
+
+    img_num_per_cls, classes = get_img_num_per_cls(main, args)
+
+    # ignore first class, partition the rest into subfields
+    classes = list(classes)[1:]
+    assert len(classes) % args.multi_num == 0
+    classes_list = [classes[i:i + args.multi_num] for i in range(0, len(classes), args.multi_num)]
+
+    for i, cls_ids in enumerate(classes_list):
+        imgs_count = itemgetter(*cls_ids)(img_num_per_cls)
+        lt_ds = gen_imbalanced_data(main, imgs_count, cls_ids)
+        lt = {"labels": lt_ds.tolist()}
+
+        filename = f"lt_{args.imf}_g{i}"
+        if args.reverse:
+            filename += "_reverse"
+        with open(os.path.join(pwd, f"{filename}.json"), "w") as f:
+            json.dump(lt, f)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='LongTail Dataset')
     parser.add_argument('--fn', metavar='PATH', type=str, help='path to the dataset json file', default="dataset.json")
@@ -100,10 +140,13 @@ if __name__ == "__main__":
     parser.add_argument('--lt_count', type=int, default=25, help='number of samples in the lt class')
     parser.add_argument('--imf', type=int, default=100, help='number of samples in the lt class')
     parser.add_argument('--reverse', action="store_true", help='number of samples in the lt class')
+    parser.add_argument('--multi_num', type=int, default=None, help='number of group of experts')
     args = parser.parse_args()
 
     if args.lt_cls:
         base_target_lt(args)
+    elif args.multi_num:
+        dataset_lt_multi(args)
     else:
         dataset_lt(args)
 
